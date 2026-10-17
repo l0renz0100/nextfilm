@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1920, initial-scale=1" />
+<title>Nextfilm</title>
+<link rel="icon" type="image/png" href="nextfilmicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="topbar">
+    <span class="logo">NEXTFILM</span>
+    <div class="topbar__actions">
+      <div class="topbar__icons">
+        <button id="pickFolderBtn" class="icon-btn icon-btn--folder" title="Probar con mis películas" aria-label="Probar con mis películas" style="display:none;"></button>
+        <button id="settingsBtn" class="icon-btn" title="Ajustes" aria-label="Ajustes">⚙</button>
+      </div>
+      <div class="topbar__search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar películas…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+        <button id="catalogToggleBtn" class="btn btn--primary catalog-toggle">Series</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="screen">
+
+    <!-- LOADING -->
+    <section id="view-loading" class="view view--center">
+      <div class="spinner"></div>
+      <p class="status-text" id="loadingText">Buscando películas…</p>
+    </section>
+
+    <!-- LOGIN (solo si CONFIG.SITE_PASSWORD tiene algo puesto) -->
+    <section id="view-login" class="view view--center" hidden>
+      <p class="status-text">Introduce la contraseña</p>
+      <div class="login-field">
+        <img src="ichigohair.png" class="login-field__icon" alt="" />
+        <input type="password" id="loginPasswordInput" class="search-input" placeholder="Contraseña" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      </div>
+      <button class="btn btn--primary" id="loginSubmitBtn">Entrar</button>
+      <p class="login-error" id="loginError" hidden>Contraseña incorrecta.</p>
+    </section>
+
+    <!-- PICK FOLDER (solo PC, sin servidor) -->
+    <section id="view-pickfolder" class="view view--center" hidden>
+      <p class="status-text">Elige la carpeta raíz de tu USB</p>
+      <p class="status-sub">Se lee directamente desde este PC, sin necesidad del servidor.</p>
+      <p class="status-sub">Debe contener dos subcarpetas: "Peliculas" (con "Título (Año)" dentro de cada una) y "Series" (con "Nombre de la Serie (Año)/Temporada 01/Capítulo 01" dentro de cada una).</p>
+      <button class="btn btn--primary" id="pickFolderMainBtn">📁 Elegir carpeta</button>
+    </section>
+
+    <!-- EMPTY -->
+    <section id="view-empty" class="view view--center" hidden>
+      <p class="status-text">No hemos encontrado ninguna película.</p>
+      <p class="status-sub">Revisa la carpeta configurada en el servidor y pulsa reintentar.</p>
+      <button class="btn btn--primary" id="retryBtn">Reintentar</button>
+    </section>
+
+    <!-- ERROR -->
+    <section id="view-error" class="view view--center" hidden>
+      <p class="status-text">No hemos podido leer el disco.</p>
+      <p class="status-sub" id="errorDetail">Error desconocido.</p>
+      <button class="btn btn--primary" id="retryBtn2">Reintentar</button>
+    </section>
+
+    <!-- BROWSE -->
+    <section id="view-browse" class="view" hidden>
+
+      <div id="hero" class="hero">
+        <div class="hero__scrim"></div>
+        <div class="hero__content">
+          <h1 class="hero__title" id="detTitle">—</h1>
+          <div class="hero__meta">
+            <span class="badge-year" id="ticketYear">—</span>
+            <span id="detMeta"></span>
+          </div>
+          <p class="hero__overview" id="detOverview" tabindex="0" role="button" title="Ver más"></p>
+          <div class="hero__actions">
+            <button class="btn btn--primary" id="playBtn">▶ Reproducir</button>
+            <button class="btn btn--ghost" id="heroContinueBtn" hidden>Seguir viendo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-wrap">
+        <h2 class="row-title" id="rowTitle">Mi colección</h2>
+        <div id="carousel" class="row"></div>
+        <div class="hint-row">
+          <span class="key">◀ ▶</span> mover &nbsp;&nbsp;
+          <span class="key">OK</span> reproducir
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAYER -->
+    <section id="view-player" class="view view--player" hidden>
+      <video id="player" controls preload="auto" disablePictureInPicture controlsList="nodownload noplaybackrate noremoteplayback"></video>
+      <div class="player-hint">Pulsa ATRÁS para volver al videoclub</div>
+    </section>
+
+  </main>
+
+  <!-- SETTINGS PANEL -->
+  <div id="settingsPanel" class="settings-panel" hidden>
+    <div class="settings-panel__box">
+      <h3>Ajustes</h3>
+      <label for="serverUrlInput">Dirección del servidor de películas (tu PC)</label>
+      <input type="text" id="serverUrlInput" placeholder="http://192.168.1.50:8080" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <p class="settings-hint">La URL que te muestra la consola al arrancar "node server/server.js"</p>
+      <label for="tmdbKeyInput">Clave de API de TMDb (opcional, para carátulas automáticas)</label>
+      <input type="text" id="tmdbKeyInput" placeholder="Pega aquí tu API key de TMDb" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <p class="settings-hint">Consíguela gratis en themoviedb.org → Ajustes → API</p>
+      <div class="settings-actions">
+        <button class="btn btn--primary" id="saveSettingsBtn">Guardar</button>
+        <button class="btn btn--ghost" id="closeSettingsBtn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL MODAL -->
+  <div id="detailModal" class="settings-panel" hidden>
+    <div class="settings-panel__box detail-modal__box">
+      <h3 id="detailTitle">—</h3>
+      <p class="detail-modal__director" id="detailDirector"></p>
+      <p class="detail-modal__overview" id="detailOverviewFull"></p>
+      <p class="detail-modal__cast" id="detailCast"></p>
+      <div class="settings-actions">
+        <button class="btn btn--ghost" id="closeDetailBtn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXIT MODAL -->
+  <div id="exitModal" class="settings-panel" hidden>
+    <div class="settings-panel__box exit-modal__box">
+      <h3>¿Quieres cerrar la aplicación?</h3>
+      <div class="settings-actions">
+        <button class="btn btn--ghost" id="cancelExitBtn">CANCELAR</button>
+        <button class="btn btn--primary" id="exitBtn">SALIR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERIES DETAIL MODAL -->
+  <div id="seriesDetailModal" class="settings-panel" hidden>
+    <div class="settings-panel__box series-modal__box">
+      <h3 id="seriesDetailTitle">—</h3>
+      <p class="series-modal__meta" id="seriesDetailMeta"></p>
+      <p class="series-modal__overview" id="seriesDetailOverview"></p>
+      <div class="series-modal__actions">
+        <button class="btn btn--primary" id="seriesContinueBtn">Seguir viendo</button>
+        <button class="btn btn--ghost" id="seriesWatchBtn">▶ Ver</button>
+      </div>
+      <div class="series-modal__seasons" id="seriesSeasonTabs"></div>
+      <div class="series-modal__episodes" id="seriesEpisodeList"></div>
+      <div class="settings-actions">
+        <button class="btn btn--ghost" id="closeSeriesDetailBtn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

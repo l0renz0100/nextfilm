@@ -1,0 +1,14 @@
+{
+  "id": "com.nextfilm",
+  "version": "2.0.1",
+  "vendor": "Penna",
+  "type": "web",
+  "main": "index.html",
+  "title": "Nextfilm",
+  "icon": "icon.png",
+  "largeIcon": "icon-large.png",
+  "iconColor": "#100D1B",
+  "resolution": "1920x1080",
+  "uiRevision": "2",
+  "disableBackHistoryAPI": true
+}
